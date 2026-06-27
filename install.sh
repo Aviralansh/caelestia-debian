@@ -33,22 +33,35 @@ sudo apt install -y -t trixie-backports \
   libpipewire-0.3-dev libpam0g-dev libpolkit-gobject-1-dev libpolkit-agent-1-dev libglib2.0-dev \
   libqalculate-dev libaubio-dev libsensors-dev \
   libfftw3-dev libasound2-dev libpulse-dev libtool automake libiniparser-dev libsdl2-dev \
-  fish eza zoxide direnv foot fastfetch btop micro thunar \
+  fish eza zoxide direnv foot fastfetch btop micro thunar dolphin \
   papirus-icon-theme gnome-keyring polkit-kde-agent-1 \
   network-manager bluez bluez-obexd \
   pipewire pipewire-pulse wireplumber pavucontrol \
   wl-clipboard cliphist curl git trash-cli jq lazygit bat ripgrep ydotool \
   xdg-user-dirs brightnessctl power-profiles-daemon ddcutil swappy \
-  fonts-noto fonts-noto-cjk fonts-noto-color-emoji unzip meson sassc starship fuzzel hyprpicker
+  fonts-noto fonts-noto-cjk fonts-noto-color-emoji unzip meson sassc starship fuzzel hyprpicker \
+  extra-cmake-modules libkf6colorscheme-dev libkf6config-dev libkf6iconthemes-dev \
+  qml6-module-qt5compat-graphicaleffects qml6-module-qtquick-effects papirus-folders
 
-# 3. Install JetBrains Mono Nerd Font
-echo "=== Installing JetBrains Mono Nerd Font ==="
+# 3. Install JetBrains Mono and Material Symbols Rounded fonts
+echo "=== Installing Fonts ==="
 mkdir -p ~/.local/share/fonts
 cd ~/.local/share/fonts
+FONT_UPDATED=0
+
 if [ ! -f "JetBrainsMonoNerdFont-Regular.ttf" ]; then
   curl -fLo JetBrainsMono.zip "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/JetBrainsMono.zip"
   unzip -o JetBrainsMono.zip
   rm JetBrainsMono.zip
+  FONT_UPDATED=1
+fi
+
+if [ ! -f "MaterialSymbolsRounded.ttf" ]; then
+  curl -fLo "MaterialSymbolsRounded.ttf" "https://github.com/google/material-design-icons/raw/refs/heads/master/font/MaterialSymbolsRounded%5Bopsz%2Cwght%2Cfill%2CGRAD%5D.ttf"
+  FONT_UPDATED=1
+fi
+
+if [ "$FONT_UPDATED" -eq 1 ]; then
   fc-cache -fv
 fi
 
@@ -88,15 +101,36 @@ cmake -GNinja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/lo
 cmake --build build -j$(nproc)
 sudo cmake --install build
 
-# 7. Install Caelestia CLI
-echo "=== Installing Caelestia CLI ==="
+# 7. Install Caelestia CLI (with Debian Patches)
+echo "=== Installing Caelestia CLI (with patches) ==="
 if [ ! -d "$WORK_DIR/caelestia-cli-git" ]; then
   git clone https://github.com/caelestia-dots/caelestia-cli.git "$WORK_DIR/caelestia-cli-git"
 fi
 cd "$WORK_DIR/caelestia-cli-git"
+git reset --hard
+git apply "$SCRIPT_DIR/patches/caelestia-cli.patch"
 pip install --break-system-packages --user .
 
-# 8. Clone Caelestia Dots and Install
+# 8. Build and Install qtengine from source (with Debian Patches)
+echo "=== Building qtengine (with patches) ==="
+if [ ! -d "$WORK_DIR/qtengine-src" ]; then
+  git clone https://github.com/kossLAN/qtengine.git "$WORK_DIR/qtengine-src"
+fi
+cd "$WORK_DIR/qtengine-src"
+git reset --hard
+git apply "$SCRIPT_DIR/patches/qtengine.patch"
+
+rm -rf build
+cmake -DCMAKE_BUILD_TYPE:STRING=Release -DBUILD_QT5=OFF -B build
+cmake --build build -j$(nproc)
+sudo cmake --install build
+
+# Symlink plugins to Debian's standard Qt6 path
+sudo ln -sf /usr/local/lib/qt6/plugins/platformthemes/libqt6engine-plugin.so /usr/lib/x86_64-linux-gnu/qt6/plugins/platformthemes/libqt6engine-plugin.so
+sudo ln -sf /usr/local/lib/qt6/plugins/styles/libqt6engine-style.so /usr/lib/x86_64-linux-gnu/qt6/plugins/styles/libqt6engine-style.so
+sudo ldconfig
+
+# 9. Clone Caelestia Dots and Install
 echo "=== Installing Caelestia Dots ==="
 if [ ! -d "$HOME/caelestia-dots" ]; then
   git clone https://github.com/caelestia-dots/caelestia-dots.git "$HOME/caelestia-dots"
@@ -104,6 +138,9 @@ fi
 cd "$HOME/caelestia-dots"
 # Run Caelestia dots installer
 ~/.local/bin/caelestia install --noconfirm
+
+# Set theme to dynamic by default
+~/.local/bin/caelestia scheme set --name dynamic
 
 echo ""
 echo "=== Caelestia Debian installation complete! ==="

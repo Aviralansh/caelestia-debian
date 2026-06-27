@@ -1,14 +1,150 @@
 diff --git a/components/effects/Elevation.qml b/components/effects/Elevation.qml
-index 9b8822c5..6752357b 100644
+index 9b8822c5..672480e9 100644
 --- a/components/effects/Elevation.qml
 +++ b/components/effects/Elevation.qml
-@@ -1,5 +1,5 @@
+@@ -1,16 +1,27 @@
  import QtQuick
 -import QtQuick.Effects
 +import Qt5Compat.GraphicalEffects
  import qs.components
  import qs.services
  
+-RectangularShadow {
++Item {
++    id: root
+     property int level
+     property real dp: [0, 1, 3, 6, 8, 12][level]
++    property real radius: 0
+ 
+-    color: Qt.alpha(Colours.palette.m3shadow, 0.7)
+-    blur: (dp * 5) ** 0.7
+-    spread: -dp * 0.3 + (dp * 0.1) ** 2
+-    offset.y: dp / 2
++    RectangularGlow {
++        anchors.fill: parent
++
++        // Apply vertical offset
++        anchors.topMargin: root.dp / 2
++        anchors.bottomMargin: -root.dp / 2
++
++        color: Qt.alpha(Colours.palette.m3shadow, 0.7)
++        glowRadius: (root.dp * 5) ** 0.7
++        spread: -root.dp * 0.3 + (root.dp * 0.1) ** 2
++
++        cornerRadius: root.radius
++    }
+ 
+     Behavior on dp {
+         Anim {
+diff --git a/modules/bar/Bar.qml b/modules/bar/Bar.qml
+index d740e0ac..c7f4b6cb 100644
+--- a/modules/bar/Bar.qml
++++ b/modules/bar/Bar.qml
+@@ -5,6 +5,7 @@ import "components"
+ import "components/workspaces"
+ import QtQuick
+ import QtQuick.Layouts
++import Qt.labs.qmlmodels
+ import Quickshell
+ import Caelestia.Config
+ import qs.components
+diff --git a/modules/dashboard/media/CoverVisualiser.qml b/modules/dashboard/media/CoverVisualiser.qml
+index e642b466..30ce1edc 100644
+--- a/modules/dashboard/media/CoverVisualiser.qml
++++ b/modules/dashboard/media/CoverVisualiser.qml
+@@ -52,7 +52,6 @@ Item {
+             readonly property real cos: Math.cos(angle)
+             readonly property real sin: Math.sin(angle)
+ 
+-            asynchronous: true
+             capStyle: root.Tokens.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+             strokeWidth: 360 / GlobalConfig.services.visualiserBars - root.Tokens.spacing.small / 4
+             strokeColor: Colours.palette.m3primary
+diff --git a/modules/lock/center/InputField.qml b/modules/lock/center/InputField.qml
+index 90b0c7de..d7c9f63a 100644
+--- a/modules/lock/center/InputField.qml
++++ b/modules/lock/center/InputField.qml
+@@ -116,7 +116,7 @@ Item {
+     }
+ 
+     component CharItem: Item {
+-        id: char
++        id: charItem
+ 
+         required property int index
+         property real nonAnimWidthScale: 1
+@@ -133,7 +133,7 @@ Item {
+ 
+             anchors.centerIn: parent
+             implicitSize: charList.implicitHeight * 1.5
+-            shape: root.shapeQueue[char.index % root.shapeQueue.length] ?? MaterialShape.Circle
++            shape: root.shapeQueue[charItem.index % root.shapeQueue.length] ?? MaterialShape.Circle
+             color: Colours.palette.m3onSurface
+ 
+             Behavior on color {
+@@ -161,14 +161,14 @@ Item {
+                         type: Anim.FastSpatial
+                     }
+                     Anim {
+-                        target: char
++                        target: charItem
+                         property: "implicitWidth"
+                         from: charList.implicitHeight
+                         to: charList.implicitHeight * 1.3
+                         type: Anim.DefaultEffects
+                     }
+                     PropertyAction {
+-                        target: char
++                        target: charItem
+                         property: "nonAnimWidthScale"
+                         value: 1.5
+                     }
+@@ -189,13 +189,13 @@ Item {
+                         type: Anim.FastSpatial
+                     }
+                     Anim {
+-                        target: char
++                        target: charItem
+                         property: "implicitWidth"
+                         to: charList.implicitHeight
+                         type: Anim.DefaultEffects
+                     }
+                     PropertyAction {
+-                        target: char
++                        target: charItem
+                         property: "nonAnimWidthScale"
+                         value: 1
+                     }
+@@ -206,7 +206,7 @@ Item {
+                 id: removeAnim
+ 
+                 PropertyAction {
+-                    target: char
++                    target: charItem
+                     property: "ListView.delayRemove"
+                     value: true
+                 }
+@@ -224,7 +224,7 @@ Item {
+                     }
+                 }
+                 PropertyAction {
+-                    target: char
++                    target: charItem
+                     property: "ListView.delayRemove"
+                     value: false
+                 }
+diff --git a/modules/utilities/cards/Toggles.qml b/modules/utilities/cards/Toggles.qml
+index d145700a..97ff57c7 100644
+--- a/modules/utilities/cards/Toggles.qml
++++ b/modules/utilities/cards/Toggles.qml
+@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
+ 
+ import QtQuick
+ import QtQuick.Layouts
++import Qt.labs.qmlmodels
+ import Quickshell.Bluetooth
+ import Caelestia.Components
+ import Caelestia.Config
 diff --git a/plugin/CMakeLists.txt b/plugin/CMakeLists.txt
 index 76e07c45..6ceb882f 100644
 --- a/plugin/CMakeLists.txt
@@ -22,7 +158,7 @@ index 76e07c45..6ceb882f 100644
  
  include(cmake/pch.cmake)
  include(cmake/qml-module.cmake)
-diff --git b/plugin/src/Caelestia/Internal/hyprextras.cpp b/plugin/src/Caelestia/Internal/hyprextras.cpp
+diff --git a/plugin/src/Caelestia/Internal/hyprextras.cpp b/plugin/src/Caelestia/Internal/hyprextras.cpp
 index 3ebe234e..73e4799a 100644
 --- a/plugin/src/Caelestia/Internal/hyprextras.cpp
 +++ b/plugin/src/Caelestia/Internal/hyprextras.cpp
@@ -33,7 +169,7 @@ index 3ebe234e..73e4799a 100644
  
  #include <qdir.h>
  #include <qjsonarray.h>
-diff --git b/plugin/src/Caelestia/Services/lyrics.cpp b/plugin/src/Caelestia/Services/lyrics.cpp
+diff --git a/plugin/src/Caelestia/Services/lyrics.cpp b/plugin/src/Caelestia/Services/lyrics.cpp
 index 2c11499e..c4a43202 100644
 --- a/plugin/src/Caelestia/Services/lyrics.cpp
 +++ b/plugin/src/Caelestia/Services/lyrics.cpp
@@ -45,7 +181,7 @@ index 2c11499e..c4a43202 100644
  #include <qnetworkcookiejar.h>
  #include <qsavefile.h>
  #include <qurlquery.h>
-diff --git b/plugin/src/Caelestia/qalculator.cpp b/plugin/src/Caelestia/qalculator.cpp
+diff --git a/plugin/src/Caelestia/qalculator.cpp b/plugin/src/Caelestia/qalculator.cpp
 index c7242179..92ed70e5 100644
 --- a/plugin/src/Caelestia/qalculator.cpp
 +++ b/plugin/src/Caelestia/qalculator.cpp

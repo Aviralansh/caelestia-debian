@@ -1,0 +1,12 @@
+diff --git a/src/caelestia/data/templates/gtk.css b/src/caelestia/data/templates/gtk.css
+index 35d16a1..fc772ea 100644
+--- a/src/caelestia/data/templates/gtk.css
++++ b/src/caelestia/data/templates/gtk.css
+@@ -16,6 +16,6 @@
+ @define-color sidebar_border_color @window_bg_color;
+ @define-color sidebar_backdrop_color @window_bg_color;
+ @define-color theme_selected_bg_color alpha(@accent_color, 0.15);
+-@define-color theme_selected_fg_color @primary;
++@define-color theme_selected_fg_color @accent_color;
+ 
+ @import "thunar.css";
