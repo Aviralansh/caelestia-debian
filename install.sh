@@ -97,7 +97,7 @@ sudo cmake --install build
 # 6. Build and Install Caelestia Shell from source (with Debian Patches)
 echo "=== Building Caelestia Shell (with patches) ==="
 if [ ! -d "$WORK_DIR/caelestia-shell-git" ]; then
-  git clone --recursive https://github.com/caelestia-dots/caelestia-shell.git "$WORK_DIR/caelestia-shell-git"
+  git clone --recursive https://github.com/caelestia-dots/shell.git "$WORK_DIR/caelestia-shell-git"
 fi
 cd "$WORK_DIR/caelestia-shell-git"
 git reset --hard
