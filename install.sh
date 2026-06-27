@@ -41,7 +41,7 @@ sudo apt install -y -t trixie-backports \
   xdg-user-dirs brightnessctl power-profiles-daemon ddcutil swappy \
   fonts-noto fonts-noto-cjk fonts-noto-color-emoji unzip meson sassc starship fuzzel hyprpicker \
   extra-cmake-modules libkf6colorscheme-dev libkf6config-dev libkf6iconthemes-dev \
-  qml6-module-qt5compat-graphicaleffects qml6-module-qtquick-effects
+  qml6-module-qt5compat-graphicaleffects qml6-module-qtquick-effects easyeffects
 
 # 3. Install JetBrains Mono and Material Symbols Rounded fonts
 echo "=== Installing Fonts ==="
@@ -148,6 +148,16 @@ cd "$HOME/caelestia-dots"
 
 # Set theme to dynamic by default
 ~/.local/bin/caelestia scheme set --name dynamic
+
+# 10. Install EasyEffects Dolby Atmos & HIFI Presets
+echo "=== Installing EasyEffects Presets ==="
+mkdir -p "$HOME/.config/easyeffects/output"
+mkdir -p "$HOME/.config/easyeffects/irs"
+if [ ! -d "$WORK_DIR/easyeffects-presets-git" ]; then
+  git clone https://github.com/JackHack96/EasyEffects-Presets.git "$WORK_DIR/easyeffects-presets-git"
+fi
+cp "$WORK_DIR/easyeffects-presets-git"/*.json "$HOME/.config/easyeffects/output/"
+cp "$WORK_DIR/easyeffects-presets-git"/irs/*.irs "$HOME/.config/easyeffects/irs/"
 
 echo ""
 echo "=== Caelestia Debian installation complete! ==="
