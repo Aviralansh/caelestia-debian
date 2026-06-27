@@ -111,7 +111,7 @@ sudo cmake --install build
 # 7. Install Caelestia CLI (with Debian Patches)
 echo "=== Installing Caelestia CLI (with patches) ==="
 if [ ! -d "$WORK_DIR/caelestia-cli-git" ]; then
-  git clone https://github.com/caelestia-dots/caelestia-cli.git "$WORK_DIR/caelestia-cli-git"
+  git clone https://github.com/caelestia-dots/cli.git "$WORK_DIR/caelestia-cli-git"
 fi
 cd "$WORK_DIR/caelestia-cli-git"
 git reset --hard
