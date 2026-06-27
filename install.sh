@@ -41,7 +41,7 @@ sudo apt install -y -t trixie-backports \
   xdg-user-dirs brightnessctl power-profiles-daemon ddcutil swappy \
   fonts-noto fonts-noto-cjk fonts-noto-color-emoji unzip meson sassc starship fuzzel hyprpicker \
   extra-cmake-modules libkf6colorscheme-dev libkf6config-dev libkf6iconthemes-dev \
-  qml6-module-qt5compat-graphicaleffects qml6-module-qtquick-effects papirus-folders
+  qml6-module-qt5compat-graphicaleffects qml6-module-qtquick-effects
 
 # 3. Install JetBrains Mono and Material Symbols Rounded fonts
 echo "=== Installing Fonts ==="
@@ -63,6 +63,13 @@ fi
 
 if [ "$FONT_UPDATED" -eq 1 ]; then
   fc-cache -fv
+fi
+
+# 3.5 Install papirus-folders manually
+echo "=== Installing papirus-folders ==="
+if ! command -v papirus-folders &> /dev/null; then
+  sudo curl -sL https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-folders/master/papirus-folders -o /usr/local/bin/papirus-folders
+  sudo chmod +x /usr/local/bin/papirus-folders
 fi
 
 # 4. Build and Install libcava from source
