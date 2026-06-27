@@ -1,0 +1,69 @@
+diff --git a/components/effects/Elevation.qml b/components/effects/Elevation.qml
+index 9b8822c5..6752357b 100644
+--- a/components/effects/Elevation.qml
++++ b/components/effects/Elevation.qml
+@@ -1,5 +1,5 @@
+ import QtQuick
+-import QtQuick.Effects
++import Qt5Compat.GraphicalEffects
+ import qs.components
+ import qs.services
+ 
+diff --git a/plugin/CMakeLists.txt b/plugin/CMakeLists.txt
+index 76e07c45..6ceb882f 100644
+--- a/plugin/CMakeLists.txt
++++ b/plugin/CMakeLists.txt
+@@ -10,7 +10,7 @@ endif()
+ include(cmake/sensorslib.cmake)
+ 
+ set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
+-qt_standard_project_setup(REQUIRES 6.9)
++qt_standard_project_setup(REQUIRES 6.8)
+ 
+ include(cmake/pch.cmake)
+ include(cmake/qml-module.cmake)
+diff --git b/plugin/src/Caelestia/Internal/hyprextras.cpp b/plugin/src/Caelestia/Internal/hyprextras.cpp
+index 3ebe234e..73e4799a 100644
+--- a/plugin/src/Caelestia/Internal/hyprextras.cpp
++++ b/plugin/src/Caelestia/Internal/hyprextras.cpp
+@@ -1,5 +1,6 @@
+ #include "hyprextras.hpp"
+ #include "hyprdevices.hpp"
++#include <QJsonDocument>
+ 
+ #include <qdir.h>
+ #include <qjsonarray.h>
+diff --git b/plugin/src/Caelestia/Services/lyrics.cpp b/plugin/src/Caelestia/Services/lyrics.cpp
+index 2c11499e..c4a43202 100644
+--- a/plugin/src/Caelestia/Services/lyrics.cpp
++++ b/plugin/src/Caelestia/Services/lyrics.cpp
+@@ -7,6 +7,7 @@
+ #include <qdiriterator.h>
+ #include <qfileinfo.h>
+ #include <qjsonarray.h>
++#include <QJsonDocument>
+ #include <qnetworkcookiejar.h>
+ #include <qsavefile.h>
+ #include <qurlquery.h>
+diff --git b/plugin/src/Caelestia/qalculator.cpp b/plugin/src/Caelestia/qalculator.cpp
+index c7242179..92ed70e5 100644
+--- a/plugin/src/Caelestia/qalculator.cpp
++++ b/plugin/src/Caelestia/qalculator.cpp
+@@ -51,7 +51,7 @@ QString Qalculator::eval(const QString& expr, bool printExpr) const {
+     }
+ 
+     if (printExpr) {
+-        return QString("%1 = %2").arg(parsed).arg(result);
++        return QString("%1 = %2").arg(QString::fromStdString(parsed)).arg(QString::fromStdString(result));
+     }
+ 
+     return QString::fromStdString(result);
+@@ -110,7 +110,7 @@ void Qalculator::evalAsync(const QString& expr) {
+         }
+ 
+         const QString rawStr = QString::fromStdString(result);
+-        return { QString("%1 = %2").arg(parsed).arg(result), rawStr };
++        return { QString("%1 = %2").arg(QString::fromStdString(parsed)).arg(QString::fromStdString(result)), rawStr };
+     }).then(this, [this, gen](QPair<QString, QString> result) {
+         if (gen != m_generation) {
+             return;
