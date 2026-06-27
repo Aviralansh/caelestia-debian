@@ -57,7 +57,7 @@ if [ ! -f "JetBrainsMonoNerdFont-Regular.ttf" ]; then
 fi
 
 if [ ! -f "MaterialSymbolsRounded.ttf" ]; then
-  curl -fLo "MaterialSymbolsRounded.ttf" "https://github.com/google/material-design-icons/raw/refs/heads/master/font/MaterialSymbolsRounded%5Bopsz%2Cwght%2Cfill%2CGRAD%5D.ttf"
+  curl -fLo "MaterialSymbolsRounded.ttf" "https://github.com/google/material-design-icons/raw/refs/heads/master/variablefont/MaterialSymbolsRounded%5BFILL%2CGRAD%2Copsz%2Cwght%5D.ttf"
   FONT_UPDATED=1
 fi
 
