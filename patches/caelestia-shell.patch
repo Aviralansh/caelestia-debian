@@ -170,7 +170,7 @@ index 3ebe234e..73e4799a 100644
  #include <qdir.h>
  #include <qjsonarray.h>
 diff --git a/plugin/src/Caelestia/Services/lyrics.cpp b/plugin/src/Caelestia/Services/lyrics.cpp
-index 2c11499e..c4a43202 100644
+index 2c11499e..563e585d 100644
 --- a/plugin/src/Caelestia/Services/lyrics.cpp
 +++ b/plugin/src/Caelestia/Services/lyrics.cpp
 @@ -7,6 +7,7 @@
@@ -181,6 +181,14 @@ index 2c11499e..c4a43202 100644
  #include <qnetworkcookiejar.h>
  #include <qsavefile.h>
  #include <qurlquery.h>
+@@ -342,6 +343,7 @@ int Lyrics::newRequestId() {
+ }
+ 
+ void Lyrics::cancelInFlight() {
++    m_currentRequestId++;
+     for (auto it = m_pendingReplies.begin(); it != m_pendingReplies.end(); ++it) {
+         for (auto& ptr : it.value()) {
+             if (auto* reply = ptr.data()) {
 diff --git a/plugin/src/Caelestia/qalculator.cpp b/plugin/src/Caelestia/qalculator.cpp
 index c7242179..92ed70e5 100644
 --- a/plugin/src/Caelestia/qalculator.cpp
