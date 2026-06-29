@@ -51,7 +51,7 @@ sudo apt install -y -t trixie-backports \
   wl-clipboard cliphist curl git trash-cli jq lazygit bat ripgrep ydotool \
   xdg-user-dirs brightnessctl power-profiles-daemon ddcutil swappy \
   fonts-noto fonts-noto-cjk fonts-noto-color-emoji unzip meson sassc starship fuzzel hyprpicker \
-  hyprland xdg-desktop-portal-hyprland python3-pip python3-venv \
+  hyprland xdg-desktop-portal-hyprland python3-pip python3-venv hyprpaper hyprland-guiutils \
   extra-cmake-modules libkf6colorscheme-dev libkf6config-dev libkf6iconthemes-dev \
   qml6-module-qt5compat-graphicaleffects qml6-module-qtquick-effects easyeffects
 
