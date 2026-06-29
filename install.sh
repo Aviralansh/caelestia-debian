@@ -145,6 +145,8 @@ cmake --build build -j$(nproc)
 sudo cmake --install build
 
 # Symlink plugins to Debian's standard Qt6 path
+sudo mkdir -p /usr/lib/x86_64-linux-gnu/qt6/plugins/platformthemes
+sudo mkdir -p /usr/lib/x86_64-linux-gnu/qt6/plugins/styles
 sudo ln -sf /usr/local/lib/qt6/plugins/platformthemes/libqt6engine-plugin.so /usr/lib/x86_64-linux-gnu/qt6/plugins/platformthemes/libqt6engine-plugin.so
 sudo ln -sf /usr/local/lib/qt6/plugins/styles/libqt6engine-style.so /usr/lib/x86_64-linux-gnu/qt6/plugins/styles/libqt6engine-style.so
 sudo ldconfig
