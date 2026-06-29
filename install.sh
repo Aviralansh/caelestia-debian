@@ -154,7 +154,7 @@ sudo ldconfig
 # 9. Clone Caelestia Dots and Install
 echo "=== Installing Caelestia Dots ==="
 if [ ! -d "$HOME/caelestia-dots" ]; then
-  git clone https://github.com/caelestia-dots/caelestia-dots.git "$HOME/caelestia-dots"
+  git clone https://github.com/caelestia-dots/caelestia.git "$HOME/caelestia-dots"
 fi
 cd "$HOME/caelestia-dots"
 # Run Caelestia dots installer
