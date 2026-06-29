@@ -10,6 +10,17 @@ echo "=== Caelestia Installer for Debian Trixie (Open Source Port) ==="
 echo "Working directory: $WORK_DIR"
 echo ""
 
+if [ "$EUID" -eq 0 ]; then
+    echo "ERROR: Please do not run this script as root. Run it as your normal user."
+    echo "It will ask for sudo password when necessary."
+    exit 1
+fi
+
+if ! command -v sudo &> /dev/null; then
+    echo "ERROR: sudo is not installed. Please install sudo and configure your user before running this script."
+    exit 1
+fi
+
 # 1. Enable trixie-backports if not already enabled
 if ! apt-cache policy | grep -q "trixie-backports"; then
     echo "Enabling Debian Trixie Backports..."
@@ -40,6 +51,7 @@ sudo apt install -y -t trixie-backports \
   wl-clipboard cliphist curl git trash-cli jq lazygit bat ripgrep ydotool \
   xdg-user-dirs brightnessctl power-profiles-daemon ddcutil swappy \
   fonts-noto fonts-noto-cjk fonts-noto-color-emoji unzip meson sassc starship fuzzel hyprpicker \
+  hyprland xdg-desktop-portal-hyprland python3-pip python3-venv \
   extra-cmake-modules libkf6colorscheme-dev libkf6config-dev libkf6iconthemes-dev \
   qml6-module-qt5compat-graphicaleffects qml6-module-qtquick-effects easyeffects
 
@@ -145,6 +157,13 @@ fi
 cd "$HOME/caelestia-dots"
 # Run Caelestia dots installer
 ~/.local/bin/caelestia install --noconfirm
+
+# Explicitly copy configuration files to ensure they are properly placed on Debian
+echo "=== Configuring Caelestia Dots ==="
+mkdir -p "$HOME/.config"
+if [ -d "$HOME/caelestia-dots/config" ]; then
+    cp -r "$HOME/caelestia-dots/config/"* "$HOME/.config/"
+fi
 
 # Set theme to dynamic by default
 ~/.local/bin/caelestia scheme set --name dynamic
