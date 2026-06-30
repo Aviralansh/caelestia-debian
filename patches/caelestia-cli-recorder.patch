@@ -1,0 +1,61 @@
+--- a/src/caelestia/subcommands/record.py
++++ b/src/caelestia/subcommands/record.py
+@@ -12,7 +12,7 @@
+ from caelestia.utils.notify import close_notification, notify
+ from caelestia.utils.paths import get_config, recording_notif_path, recording_path, recordings_dir
+ 
+-RECORDER = "gpu-screen-recorder"
++RECORDER = "wf-recorder"
+ 
+ 
+ class Command:
+@@ -35,28 +35,15 @@
+         return a[0] < b[0] + b[2] and a[0] + a[2] > b[0] and a[1] < b[1] + b[3] and a[1] + a[3] > b[1]
+ 
+     def start(self) -> None:
+-        args = ["-w"]
++        args = []
+ 
+         monitors = hypr.message("monitors")
+         if self.args.region:
+             if self.args.region == "slurp":
+-                region = subprocess.check_output(["slurp", "-f", "%wx%h+%x+%y"], text=True)
++                region = subprocess.check_output(["slurp", "-f", "%x,%y %wx%h"], text=True).strip()
+             else:
+                 region = self.args.region.strip()
+-            args += ["region", "-region", region]
+-
+-            m = re.match(r"(\d+)x(\d+)\+(\d+)\+(\d+)", region)
+-            if not m:
+-                raise ValueError(f"Invalid region: {region}")
+-
+-            w, h, x, y = map(int, m.groups())
+-            r = x, y, w, h
+-            max_rr = 0
+-            for monitor in monitors:
+-                if self.intersects((monitor["x"], monitor["y"], monitor["width"], monitor["height"]), r):
+-                    rr = round(monitor["refreshRate"])
+-                    max_rr = max(max_rr, rr)
+-            args += ["-f", str(max_rr)]
++            args += ["-g", region]
+         else:
+             focused_monitor = next(monitor for monitor in monitors if monitor["focused"])
+             if focused_monitor:
+-                args += [focused_monitor["name"], "-f", str(round(focused_monitor["refreshRate"]))]
++                args += ["-o", focused_monitor["name"]]
+ 
+         if self.args.sound:
+-            args += ["-a", "default_output"]
++            args += ["-a"]
+ 
+         config = get_config()
+         try:
+@@ -73,7 +60,7 @@
+             raise ValueError(f"Config option 'record.extraArgs' should be an array: {e}")
+ 
+         recording_path.parent.mkdir(parents=True, exist_ok=True)
+-        proc = subprocess.Popen([RECORDER, *args, "-o", str(recording_path)], start_new_session=True)
++        proc = subprocess.Popen([RECORDER, *args, "-f", str(recording_path)], start_new_session=True)
+ 
+         notif = notify("-p", "Recording started", "Recording...")
+         recording_notif_path.write_text(notif)
