@@ -1,5 +1,7 @@
 # Caelestia Debian Installer
 
+> ⚠️ **IMPORTANT:** This installer is strictly designed for **Debian 13 Trixie (Testing)**. It will not work on Debian 12 (Bookworm/Stable) because it relies on newer packages and libraries (like Qt 6.8+ and recent Hyprland builds) that are simply not available in Debian Stable.
+
 An open-source installer script and set of patches to run the [Caelestia Hyprland desktop environment](https://github.com/caelestia-dots) on **Debian Trixie (Testing)**.
 
 ## Motivation
