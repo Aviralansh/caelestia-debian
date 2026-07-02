@@ -24,7 +24,7 @@ Caelestia is a highly customized, visually striking Hyprland configuration prima
 
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/yourusername/caelestia-debian.git
+   git clone https://github.com/Aviralansh/caelestia-debian.git
    cd caelestia-debian
    ```
 
