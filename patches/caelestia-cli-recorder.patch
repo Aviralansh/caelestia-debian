@@ -1,6 +1,8 @@
+diff --git a/src/caelestia/subcommands/record.py b/src/caelestia/subcommands/record.py
+index 7e4e5e1..c2c27e5 100644
 --- a/src/caelestia/subcommands/record.py
 +++ b/src/caelestia/subcommands/record.py
-@@ -12,7 +12,7 @@
+@@ -10,7 +10,7 @@ from caelestia.utils import hypr
  from caelestia.utils.notify import close_notification, notify
  from caelestia.utils.paths import get_config, recording_notif_path, recording_path, recordings_dir
  
@@ -9,7 +11,7 @@
  
  
  class Command:
-@@ -35,28 +35,15 @@
+@@ -34,35 +34,22 @@ class Command:
          return a[0] < b[0] + b[2] and a[0] + a[2] > b[0] and a[1] < b[1] + b[3] and a[1] + a[3] > b[1]
  
      def start(self) -> None:
@@ -25,7 +27,7 @@
                  region = self.args.region.strip()
 -            args += ["region", "-region", region]
 -
--            m = re.match(r"(\d+)x(\d+)\+(\d+)\+(\d+)", region)
+-            m = re.match(r"(\d+)x(\d+)\+(-?\d+)\+(-?\d+)", region)
 -            if not m:
 -                raise ValueError(f"Invalid region: {region}")
 -
@@ -50,7 +52,7 @@
  
          config = get_config()
          try:
-@@ -73,7 +60,7 @@
+@@ -72,7 +59,7 @@ class Command:
              raise ValueError(f"Config option 'record.extraArgs' should be an array: {e}")
  
          recording_path.parent.mkdir(parents=True, exist_ok=True)
