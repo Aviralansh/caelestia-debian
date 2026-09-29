@@ -108,11 +108,17 @@ sudo cmake --install build
 
 # 6. Build and Install Caelestia Shell from source (with Debian Patches)
 echo "=== Building Caelestia Shell (with patches) ==="
+# The Debian patches target this specific upstream commit. Upstream main has
+# since diverged (files moved/renamed), so pin instead of tracking main.
+CAELESTIA_SHELL_COMMIT="145a6795ee41e023e863681cec6c5db3b334ffc0"
 if [ ! -d "$WORK_DIR/caelestia-shell-git" ]; then
-  git clone --recursive https://github.com/caelestia-dots/shell.git "$WORK_DIR/caelestia-shell-git"
+  git clone https://github.com/caelestia-dots/shell.git "$WORK_DIR/caelestia-shell-git"
 fi
 cd "$WORK_DIR/caelestia-shell-git"
+git fetch origin
 git reset --hard
+git checkout -f "$CAELESTIA_SHELL_COMMIT"
+git submodule update --init --recursive
 git apply "$SCRIPT_DIR/patches/caelestia-shell.patch"
 
 rm -rf build
