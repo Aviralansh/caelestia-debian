@@ -97,10 +97,16 @@ sudo meson install -C build
 
 # 5. Build and Install Quickshell from source
 echo "=== Building Quickshell from source ==="
+# Pinned to the quickshell version the pinned caelestia-shell was developed against
+QUICKSHELL_COMMIT="68c2c85"
 if [ ! -d "$WORK_DIR/quickshell" ]; then
-  git clone --recursive https://github.com/outfoxxed/quickshell.git "$WORK_DIR/quickshell"
+  git clone https://github.com/outfoxxed/quickshell.git "$WORK_DIR/quickshell"
 fi
 cd "$WORK_DIR/quickshell"
+git fetch origin
+git reset --hard
+git checkout -f "$QUICKSHELL_COMMIT"
+git submodule update --init --recursive
 rm -rf build
 cmake -GNinja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DVENDOR_CPPTRACE=ON -DINSTALL_QMLDIR=/usr/lib/x86_64-linux-gnu/qt6/qml
 cmake --build build -j$(nproc)
@@ -108,11 +114,17 @@ sudo cmake --install build
 
 # 6. Build and Install Caelestia Shell from source (with Debian Patches)
 echo "=== Building Caelestia Shell (with patches) ==="
+# The Debian patches target this specific upstream commit. Upstream main has
+# since diverged (files moved/renamed), so pin instead of tracking main.
+CAELESTIA_SHELL_COMMIT="145a6795ee41e023e863681cec6c5db3b334ffc0"
 if [ ! -d "$WORK_DIR/caelestia-shell-git" ]; then
-  git clone --recursive https://github.com/caelestia-dots/shell.git "$WORK_DIR/caelestia-shell-git"
+  git clone https://github.com/caelestia-dots/shell.git "$WORK_DIR/caelestia-shell-git"
 fi
 cd "$WORK_DIR/caelestia-shell-git"
+git fetch origin
 git reset --hard
+git checkout -f "$CAELESTIA_SHELL_COMMIT"
+git submodule update --init --recursive
 git apply "$SCRIPT_DIR/patches/caelestia-shell.patch"
 
 rm -rf build
@@ -122,22 +134,33 @@ sudo cmake --install build
 
 # 7. Install Caelestia CLI (with Debian Patches)
 echo "=== Installing Caelestia CLI (with patches) ==="
+# Pinned: patches target this upstream commit (main has since diverged)
+CAELESTIA_CLI_COMMIT="e7b34e468dd1c5d864b0d5930aea115d8a2a37fa"
 if [ ! -d "$WORK_DIR/caelestia-cli-git" ]; then
   git clone https://github.com/caelestia-dots/cli.git "$WORK_DIR/caelestia-cli-git"
 fi
 cd "$WORK_DIR/caelestia-cli-git"
+git fetch origin
 git reset --hard
+git checkout -f "$CAELESTIA_CLI_COMMIT"
 git apply "$SCRIPT_DIR/patches/caelestia-cli.patch"
 git apply "$SCRIPT_DIR/patches/caelestia-cli-recorder.patch"
 pip install --break-system-packages --user .
+# Hyprland sessions started from a display manager often lack ~/.local/bin in PATH,
+# which makes `exec caelestia shell -d` silently fail (no bar/dashboard). Symlink it.
+sudo ln -sf "$HOME/.local/bin/caelestia" /usr/local/bin/caelestia
 
 # 8. Build and Install qtengine from source (with Debian Patches)
 echo "=== Building qtengine (with patches) ==="
+# Pinned: patch targets this upstream commit (main has since diverged)
+QTENGINE_COMMIT="073987f0120ac77a92fb9f0c0877aa7f1f04d3bf"
 if [ ! -d "$WORK_DIR/qtengine-src" ]; then
   git clone https://github.com/kossLAN/qtengine.git "$WORK_DIR/qtengine-src"
 fi
 cd "$WORK_DIR/qtengine-src"
+git fetch origin
 git reset --hard
+git checkout -f "$QTENGINE_COMMIT"
 git apply "$SCRIPT_DIR/patches/qtengine.patch"
 
 rm -rf build
